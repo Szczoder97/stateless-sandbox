@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "T3/gliKJbx6PMyKC6EKZznTlaamuKSFmx68Pf/G41rzm9/XrtqLPngSCVjFELjZItjZtxrl7KCB1DiNvSVyDLA==",
+  "success": true,
+  "projectFilePath": "D:\\kghm\\sandbox\\sandbox\\sandbox.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Paweł\\.nuget\\packages\\stateless\\5.11.0\\stateless.5.11.0.nupkg.sha512"
+  ],
+  "logs": []
+}
