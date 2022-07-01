@@ -12,7 +12,6 @@ namespace sandbox
         public List<SubTask> SubTasks { get; set; }
         public bool DataAccepted { get; set; }
         public StateMachine<State, Trigger>.TriggerWithParameters<string> AddTaskTrigger;
-        public StateMachine<State, Trigger>.TriggerWithParameters<bool> AcceptDataTrigger;
 
         public UnitTask(string text)
         {
@@ -23,16 +22,18 @@ namespace sandbox
 
             setAsigneeTrigger = machine.SetTriggerParameters<string>(Trigger.Assign);
             AddTaskTrigger = machine.SetTriggerParameters<string>(Trigger.AddTask);
-            AcceptDataTrigger = machine.SetTriggerParameters<bool>(Trigger.Complete);
 
             machine.Configure(State.Open)
                 .Permit(Trigger.Assign, State.Assigned);
             machine.Configure(State.Assigned)
                 .OnEntryFrom(setAsigneeTrigger, assignee => OnAssign(assignee))
                 .InternalTransition<string>(AddTaskTrigger, (text, t) => OnAddTask(text))
-                .PermitIf(Trigger.Complete, State.Completed, () => DataCompleteCheck());
-            machine.Configure(State.Completed)
-                .OnEntryFrom(AcceptDataTrigger, accepted => OnComplete(accepted));
+                .PermitIf(Trigger.Accept, State.Accepted, () => DataCompleteCheck())
+                .PermitIf(Trigger.Reject, State.Rejected, () => DataCompleteCheck());
+            machine.Configure(State.Accepted)
+                .SubstateOf(State.Completed);
+            machine.Configure(State.Rejected)
+                .SubstateOf(State.Completed);
         }
 
         public void Assing(string assignee)
@@ -40,9 +41,14 @@ namespace sandbox
             machine.Fire(setAsigneeTrigger, assignee);
         }
 
-        public void Complete(bool isAccepted)
+        public void Accept()
         {
-            machine.Fire(AcceptDataTrigger, isAccepted);
+            machine.Fire(Trigger.Accept);
+        }
+
+        public void Reject()
+        {
+            machine.Fire(Trigger.Reject);
         }
 
         public void AddTask(string text)
@@ -57,11 +63,6 @@ namespace sandbox
         private void OnAddTask(string text)
         {
             SubTasks.Add(new SubTask(text));
-        }
-
-        public void OnComplete(bool isAccepted)
-        {
-            DataAccepted = isAccepted;
         }
 
         private bool DataCompleteCheck()

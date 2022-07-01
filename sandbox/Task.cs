@@ -9,8 +9,8 @@ namespace sandbox
 {
     abstract class Task
     {
-       public enum State { Open, Assigned, Completed, Rejected };
-       public enum Trigger { Assign, Complete, Verify, AddTask };
+       public enum State { Open, Assigned, Completed, Accepted, Rejected };
+       public enum Trigger { Assign, Complete, Verify, AddTask, Accept, Reject };
        public StateMachine <State, Trigger> machine;
        public StateMachine<State, Trigger>.TriggerWithParameters<string> setAsigneeTrigger;
        public string Text { get; set; }

@@ -23,14 +23,14 @@ namespace sandbox
             zadA.Complete("zrobiłem robotę");
             zadB.Assing("inny pracownik");
             zadB.Complete("brak wyników");
-            zad1.Complete(true); // possible only if all subtasks are completed
+            zad1.Accept(); // possible only if all subtasks are completed
             // another task for different unit 
             zad2.Assing("Spółka");
             zad2.AddTask("Zadanie C");
             var zadC = zad2.SubTasks[0];
             zadC.Assing("Pracownik spółki");
             zadC.Complete("złe wyniki");
-            zad2.Complete(false);
+            zad2.Reject();
             // passing whole report to verification
             report.Verify();
         }
