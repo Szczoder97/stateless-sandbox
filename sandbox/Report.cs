@@ -12,7 +12,7 @@ namespace sandbox
         public string Assignee;
         public enum State { Open, Assigned, Verified };
         public enum Trigger { Assign, AddTask, Verify};
-        public StateMachine<State, Trigger> machine;
+        public StateMachine<State, Trigger> Machine;
         public List<UnitTask> Tasks { get; set; }
         public StateMachine<State, Trigger>.TriggerWithParameters<string> AssingReportTrigger;
         public StateMachine<State, Trigger>.TriggerWithParameters<string> AddTaskTrigger;
@@ -20,13 +20,13 @@ namespace sandbox
         public Report()
         {
             Tasks = new List<UnitTask>();
-            machine = new StateMachine<State, Trigger>(State.Open);
-            AssingReportTrigger = machine.SetTriggerParameters<string>(Trigger.Assign);
-            AddTaskTrigger = machine.SetTriggerParameters<string>(Trigger.AddTask);
+            Machine = new StateMachine<State, Trigger>(State.Open);
+            AssingReportTrigger = Machine.SetTriggerParameters<string>(Trigger.Assign);
+            AddTaskTrigger = Machine.SetTriggerParameters<string>(Trigger.AddTask);
 
-            machine.Configure(State.Open)
+            Machine.Configure(State.Open)
                 .Permit(Trigger.Assign, State.Assigned);
-            machine.Configure(State.Assigned)
+            Machine.Configure(State.Assigned)
                 .OnEntryFrom(AssingReportTrigger, assignee => OnAssing(assignee))
                 .InternalTransition<string>(AddTaskTrigger, (text, t) => OnAddTask(text))
                 .PermitIf(Trigger.Verify, State.Verified, () => TasksCompletionCheck());
@@ -34,17 +34,17 @@ namespace sandbox
 
         public void Assign(string assignee)
         {
-            machine.Fire(AssingReportTrigger, assignee);
+            Machine.Fire(AssingReportTrigger, assignee);
         }
 
         public void AddTask(string text)
         {
-            machine.Fire(AddTaskTrigger, text);
+            Machine.Fire(AddTaskTrigger, text);
         }
 
         public void Verify()
         {
-            machine.Fire(Trigger.Verify);
+            Machine.Fire(Trigger.Verify);
         }
 
         private void OnAssing(string assignee)
@@ -58,7 +58,7 @@ namespace sandbox
 
         private bool TasksCompletionCheck()
         {
-            return Tasks.All(t => t.machine.IsInState(Task.State.Completed));
+            return Tasks.All(t => t.Machine.IsInState(Task.State.Completed));
         }
 
     }

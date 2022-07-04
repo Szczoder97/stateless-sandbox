@@ -11,8 +11,8 @@ namespace sandbox
     {
        public enum State { Open, Assigned, Completed, Accepted, Rejected };
        public enum Trigger { Assign, Complete, Verify, AddTask, Accept, Reject };
-       public StateMachine <State, Trigger> machine;
-       public StateMachine<State, Trigger>.TriggerWithParameters<string> setAsigneeTrigger;
+       public StateMachine <State, Trigger> Machine;
+       public StateMachine<State, Trigger>.TriggerWithParameters<string> SetAsigneeTrigger;
        public string Text { get; set; }
        public string Assignee { get; set; }
     }

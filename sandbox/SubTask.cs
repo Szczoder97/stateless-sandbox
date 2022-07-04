@@ -10,32 +10,32 @@ namespace sandbox
     class SubTask : Task
     {
         public string Data { get; set; }
-        public StateMachine<State, Trigger>.TriggerWithParameters<string> setDataTrigger;
+        public StateMachine<State, Trigger>.TriggerWithParameters<string> SetDataTrigger;
 
         public SubTask(string text)
         {
             Text = text;
-            machine = new StateMachine<State, Trigger>(State.Open);
-            setAsigneeTrigger = machine.SetTriggerParameters<string>(Trigger.Assign);
-            setDataTrigger = machine.SetTriggerParameters<string>(Trigger.Complete);
+            Machine = new StateMachine<State, Trigger>(State.Open);
+            SetAsigneeTrigger = Machine.SetTriggerParameters<string>(Trigger.Assign);
+            SetDataTrigger = Machine.SetTriggerParameters<string>(Trigger.Complete);
 
-            machine.Configure(State.Open)
+            Machine.Configure(State.Open)
                 .Permit(Trigger.Assign, State.Assigned);
-            machine.Configure(State.Assigned)
-                .OnEntryFrom(setAsigneeTrigger, assignee => OnAssign(assignee))
+            Machine.Configure(State.Assigned)
+                .OnEntryFrom(SetAsigneeTrigger, assignee => OnAssign(assignee))
                 .Permit(Trigger.Complete, State.Completed);
-            machine.Configure(State.Completed)
-                .OnEntryFrom(setDataTrigger, data => OnComplete(data));
+            Machine.Configure(State.Completed)
+                .OnEntryFrom(SetDataTrigger, data => OnComplete(data));
         }
 
         public void Assing(string assignee)
         {
-            machine.Fire(setAsigneeTrigger, assignee);
+            Machine.Fire(SetAsigneeTrigger, assignee);
         }
 
         public void Complete(string data)
         {
-            machine.Fire(setDataTrigger, data);
+            Machine.Fire(SetDataTrigger, data);
         }
         private void OnAssign(string assignee)
         {

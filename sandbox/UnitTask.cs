@@ -18,42 +18,42 @@ namespace sandbox
             Text = text;
             SubTasks = new List<SubTask>();
 
-            machine = new StateMachine<State, Trigger>(State.Open);
+            Machine = new StateMachine<State, Trigger>(State.Open);
 
-            setAsigneeTrigger = machine.SetTriggerParameters<string>(Trigger.Assign);
-            AddTaskTrigger = machine.SetTriggerParameters<string>(Trigger.AddTask);
+            SetAsigneeTrigger = Machine.SetTriggerParameters<string>(Trigger.Assign);
+            AddTaskTrigger = Machine.SetTriggerParameters<string>(Trigger.AddTask);
 
-            machine.Configure(State.Open)
+            Machine.Configure(State.Open)
                 .Permit(Trigger.Assign, State.Assigned);
-            machine.Configure(State.Assigned)
-                .OnEntryFrom(setAsigneeTrigger, assignee => OnAssign(assignee))
+            Machine.Configure(State.Assigned)
+                .OnEntryFrom(SetAsigneeTrigger, assignee => OnAssign(assignee))
                 .InternalTransition<string>(AddTaskTrigger, (text, t) => OnAddTask(text))
                 .PermitIf(Trigger.Accept, State.Accepted, () => DataCompleteCheck())
                 .PermitIf(Trigger.Reject, State.Rejected, () => DataCompleteCheck());
-            machine.Configure(State.Accepted)
+            Machine.Configure(State.Accepted)
                 .SubstateOf(State.Completed);
-            machine.Configure(State.Rejected)
+            Machine.Configure(State.Rejected)
                 .SubstateOf(State.Completed);
         }
 
         public void Assing(string assignee)
         {
-            machine.Fire(setAsigneeTrigger, assignee);
+            Machine.Fire(SetAsigneeTrigger, assignee);
         }
 
         public void Accept()
         {
-            machine.Fire(Trigger.Accept);
+            Machine.Fire(Trigger.Accept);
         }
 
         public void Reject()
         {
-            machine.Fire(Trigger.Reject);
+            Machine.Fire(Trigger.Reject);
         }
 
         public void AddTask(string text)
         {
-            machine.Fire(AddTaskTrigger, text);
+            Machine.Fire(AddTaskTrigger, text);
         }
         private void OnAssign(string assignee)
         {
@@ -67,7 +67,7 @@ namespace sandbox
 
         private bool DataCompleteCheck()
         {
-            return SubTasks.All(t => t.machine.IsInState(State.Completed));
+            return SubTasks.All(t => t.Machine.IsInState(State.Completed));
         }
 
     }
